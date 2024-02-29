@@ -65,10 +65,11 @@ class Lexer {
         default:
           if (isNumeric(this.#at())) {
             let strNumber = "";
-            console.log(this.#at());
+
             while (isNumeric(this.#at())) {
               strNumber += this.#at();
               this.#cursor++;
+              //   console.log(strNumber, this.#cursor, this.#at());
             }
             tokens.push({
               type: TokenTypes.INTEGER,
