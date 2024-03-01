@@ -23,7 +23,6 @@ const TokenTypes = {
   GREATER_OR_EQUAL: "GREATER-OR-EQUAL",
   LESS_OR_EQUAL: "LESS-OR-EQUAL",
   LOGICAL_NOT: "LOGICAL-NOT",
-
   EOF: "EOF",
 };
 
