@@ -158,7 +158,7 @@ class Lexer {
             //set strValue to an empty string and go into while loop until
             //all characters are read and store into strValue for switch case comparison
             let strValue = "";
-            while (isAlpha(this.#currentIndex())) {
+            while (isAlphaNumeric(this.#currentIndex())) {
               strValue += this.#currentIndex();
               this.#cursor++;
             }
@@ -263,6 +263,10 @@ function isAlpha(char = "") {
     (char.charCodeAt(0) >= 65 && char.charCodeAt(0) <= 90) || // Uppercase A-Z
     (char.charCodeAt(0) >= 97 && char.charCodeAt(0) <= 122) // Lowercase a-z
   );
+}
+
+function isAlphaNumeric(char = "") {
+  return isAlpha(char) || isNumeric(char);
 }
 
 //export the Lexer class and the TokenTypes object
