@@ -152,6 +152,7 @@ class Lexer {
               type: TokenTypes.INTEGER,
               value: parseInt(strNumber),
             });
+            this.#cursor--;
 
             //next check if the character are alphabetic characters to form a string.
           } else if (isAlpha(this.#currentIndex())) {
