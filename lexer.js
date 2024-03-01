@@ -16,6 +16,13 @@ const TokenTypes = {
   CASE: "CASE",
   BREAK: "BREAK",
   CONTINUE: "CONTINUE",
+  GREATER_THAN: "GREATER-THAN",
+  LESS_THAN: "LESS-THAN",
+  EQUAL_TO: "EQUAL-TO",
+  NOT_EQUAL_TO: "NOT-EQUAL-TO",
+  GREATER_OR_EQUAL: "GREATER-OR-EQUAL",
+  LESS_OR_EQUAL: "LESS-OR-EQUAL",
+  LOGICAL_NOT: "LOGICAL-NOT",
 
   EOF: "EOF",
 };
@@ -78,6 +85,45 @@ class Lexer {
         case ")":
           tokens.push({ type: "RPAREN", value: ")" });
           this.#cursor++;
+          break;
+        case ">":
+          if (
+            this.#stream[this.#cursor] === ">" &&
+            this.#stream[this.#cursor + 1] === "="
+          ) {
+            tokens.push({ type: "GREATER_OR_EQUAL", value: ">=" });
+            this.#cursor++; // Advance past the '=' character
+          } else {
+            tokens.push({ type: "GREATER_THAN", value: ">" });
+          }
+          break;
+
+        case "<":
+          if (this.#stream[this.#cursor + 1] === "=") {
+            tokens.push({ type: "LESS_OR_EQUAL", value: "<=" });
+            this.#cursor++; // Advance past the '=' character
+          } else {
+            tokens.push({ type: "LESS_THAN", value: "<" });
+          }
+          break;
+
+        case "=":
+          if (this.#stream[this.#cursor + 1] === "=") {
+            tokens.push({ type: "EQUAL_TO", value: "==" });
+            this.#cursor++; // Advance past the next '=' character
+          } else {
+            tokens.push({ type: "ASSIGNMENT", value: "=" });
+          }
+          break;
+
+        case "!":
+          if (this.#stream[this.#cursor + 1] === "=") {
+            tokens.push({ type: "NOT_EQUAL_TO", value: "!=" });
+            this.#cursor++; // Advance past the '=' character
+          } else {
+            // Handle as a logical NOT, or throw an error if '!' is not used in this way in your language
+            tokens.push({ type: "LOGICAL_NOT", value: "!" });
+          }
           break;
 
         //First check if the character is a number, then check if it is a string, if neither throw an error.
