@@ -2,7 +2,7 @@ const { Lexer } = require("./lexer");
 // const { Parser } = require("./parser");
 
 const lexer = new Lexer();
-const tokens = lexer.tokenize(">=12 1+2 23d");
+const tokens = lexer.tokenize("(1>=1 >2) * ...3 - .4 / 5");
 // const parser = new Parser(tokens);
 
 // const ast = parser.parse();

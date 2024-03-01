@@ -5,8 +5,12 @@ const TokenTypes = {
   MINUS: "MINUS",
   MULTIPLY: "MULTIPLY",
   DIVIDE: "DIVIDE",
+  REMAINDER: "REMAINDER",
   LPAREN: "LPAREN",
   RPAREN: "RPAREN",
+  LBERACE: "LBERACE",
+  RBERACE: "RBERACE",
+  ASSIGNMENT: "ASSIGNMENT",
   STRING: "STRING",
   RETURN: "RETURN",
   IF: "IF",
@@ -23,6 +27,14 @@ const TokenTypes = {
   GREATER_OR_EQUAL: "GREATER-OR-EQUAL",
   LESS_OR_EQUAL: "LESS-OR-EQUAL",
   LOGICAL_NOT: "LOGICAL-NOT",
+  AT_SIGN: "@",
+  NULL: "NULL",
+  DOT: "DOT",
+  DOT_DOT: "DOT-DOT",
+  COMMA: "COMMA",
+  COLON: "COLON",
+  SEMICOLON: "SEMICOLON",
+
   EOF: "EOF",
 };
 
@@ -61,30 +73,78 @@ class Lexer {
         //mathematical operators
         case "+":
           tokens.push({ type: "PLUS", value: "+" });
-          this.#cursor++;
+
           break;
         case "-":
           tokens.push({ type: "MINUS", value: "-" });
-          this.#cursor++;
+
           break;
         case "*":
           tokens.push({ type: "MULTIPLY", value: "*" });
-          this.#cursor++;
+
           break;
         case "/":
           tokens.push({ type: "DIVIDE", value: "/" });
-          this.#cursor++;
+
+          break;
+        case "%":
+          tokens.push({ type: "REMAINDER", value: "%" });
+
           break;
 
         //tokens for parentheses
         case "(":
           tokens.push({ type: "LPAREN", value: "(" });
-          this.#cursor++;
+
           break;
         case ")":
           tokens.push({ type: "RPAREN", value: ")" });
-          this.#cursor++;
+
           break;
+        case "{":
+          tokens.push({ type: "LBERACE", value: "{" });
+
+          break;
+        case "}":
+          tokens.push({ type: "RBERACE", value: "}" });
+
+          break;
+        //Additional tokens for the lexer
+        case "@":
+          tokens.push({ type: "AT_SIGN", value: "@" });
+
+          break;
+        case "null":
+          tokens.push({ type: "NULL", value: "null" });
+
+          break;
+        case ".":
+          //check if the next two characters are also dots, if they are, push the token for the DOT_DOT, else push the token for the DOT
+          if (
+            this.#stream[this.#cursor] === "." &&
+            this.#stream[this.#cursor + 1] === "." &&
+            this.#stream[this.#cursor + 2] === "."
+          ) {
+            tokens.push({ type: "DOT_DOT", value: "..." });
+            //We want to advance past the next two '.' characters to avoid checking them twice.
+            this.#cursor += 2;
+          } else {
+            tokens.push({ type: "DOT", value: "." });
+          }
+          break;
+        case ",":
+          tokens.push({ type: "COMMA", value: "," });
+
+          break;
+        case ":":
+          tokens.push({ type: "COLON", value: ":" });
+
+          break;
+        case ";":
+          tokens.push({ type: "SEMICOLON", value: ";" });
+
+          break;
+
         case ">":
           /*check if the next character is an equal sign, if it is, 
             push the token for greater than or equal to, else push the 
