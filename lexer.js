@@ -150,6 +150,19 @@ class Lexer {
                   value: strValue,
                 });
                 break;
+              case "break":
+                tokens.push({
+                  type: TokenTypes.BREAK,
+                  value: strValue,
+                });
+                break;
+              case "continue":
+                tokens.push({
+                  type: TokenTypes.CONTINUE,
+                  value: strValue,
+                });
+                break;
+
               // Add other keywords as needed. We can continue to add more keywords as needed.
               //if not a keyword go into the default case and treat it as a string
               default:
