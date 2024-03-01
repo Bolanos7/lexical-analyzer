@@ -4,7 +4,7 @@ class Parser {
   #tokens = [];
   #cursor = 0;
 
-  #at() {
+  #currentIndex() {
     return this.#tokens[this.#cursor];
   }
 
@@ -13,12 +13,12 @@ class Parser {
   }
 
   #eatToken(tokenType) {
-    if (this.#at().type === tokenType) {
+    if (this.#currentIndex().type === tokenType) {
       this.#cursor++;
     } else {
       throw new Error(
         `Unexpected token ${
-          this.#at().type
+          this.#currentIndex().type
         }, instead received ${tokenType} at position ${this.#cursor}`
       );
     }
@@ -38,12 +38,13 @@ class Parser {
 
     // while the current token is either a plus or minus token = true, go into the loop
     while (
-      this.#at().type === tokenType.PLUS ||
-      this.#at().type === tokenType.SUBTRACT
+      this.#currentIndex().type === tokenType.PLUS ||
+      this.#currentIndex().type === tokenType.SUBTRACT
     ) {
       // if parentheses is true, return the left hand side(PLUS) else return the right hand side(MINUS) and store into ttype
-      const operator = this.#at.value;
-      const ttype = this.#at().type === tokenType.PLUS ? "PLUS" : "MINUS";
+      const operator = this.#currentIndex.value;
+      const ttype =
+        this.#currentIndex().type === tokenType.PLUS ? "PLUS" : "MINUS";
       this.#eatToken(ttype);
       let rhs = this.#parse_expression();
       leftHandSide = {
@@ -66,7 +67,7 @@ class Parser {
 
   //Higher precedence
   #parse_factor() {
-    return { type: "NumericLiteral", value: this.#at().value };
+    return { type: "NumericLiteral", value: this.#currentIndex().value };
     this.#eatToken(tokenType.INTEGER);
     return literal;
   }

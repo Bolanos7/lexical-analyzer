@@ -11,6 +11,12 @@ const TokenTypes = {
   RETURN: "RETURN",
   IF: "IF",
   WHILE: "WHILE",
+  FOR: "FOR",
+  ELSE: "ELSE",
+  CASE: "CASE",
+  BREAK: "BREAK",
+  CONTINUE: "CONTINUE",
+
   EOF: "EOF",
 };
 
@@ -24,7 +30,7 @@ class Lexer {
   constructor() {}
 
   //method to get the character at the current position of the cursor
-  #at() {
+  #currentIndex() {
     return this.#stream[this.#cursor];
   }
 
@@ -39,7 +45,7 @@ class Lexer {
 
     //loop through the stream of characters and tokenize them. We can add to this loop later to tokenize more speciafic sequences of characters
     while (this.#cursor < this.#stream.length) {
-      switch (this.#at()) {
+      switch (this.#currentIndex()) {
         //first few cases before the break are to skip over white spaces
         case " ":
         case "\t":
@@ -77,11 +83,11 @@ class Lexer {
         //First check if the character is a number, then check if it is a string, if neither throw an error.
 
         default:
-          if (isNumeric(this.#at())) {
+          if (isNumeric(this.#currentIndex())) {
             let strNumber = "";
 
-            while (isNumeric(this.#at())) {
-              strNumber += this.#at();
+            while (isNumeric(this.#currentIndex())) {
+              strNumber += this.#currentIndex();
               this.#cursor++;
               //   console.log(strNumber, this.#cursor, this.#at());
             }
@@ -89,47 +95,78 @@ class Lexer {
               type: TokenTypes.INTEGER,
               value: parseInt(strNumber),
             });
-          } else if (isAlpha(this.#at())) {
-            // Check for alphabetic characters to form a string
+
+            //next check if the character are alphabetic characters to form a string.
+          } else if (isAlpha(this.#currentIndex())) {
+            //set strValue to an empty string and go into while loop until
+            //all characters are read and store into strValue for switch case comparison
             let strValue = "";
-            while (isAlpha(this.#at())) {
-              strValue += this.#at();
+            while (isAlpha(this.#currentIndex())) {
+              strValue += this.#currentIndex();
               this.#cursor++;
             }
-            if (strValue === "return") {
-              tokens.push({
-                type: TokenTypes.RETURN,
-                value: strValue,
-              });
-              this.#cursor--;
-            } else if (strValue === "if") {
-              tokens.push({
-                type: TokenTypes.IF,
-                value: strValue,
-              });
-              this.#cursor--;
-            } else if (strValue === "while") {
-              tokens.push({
-                type: TokenTypes.WHILE,
-                value: strValue,
-              });
-              this.#cursor--;
-            } else {
-              tokens.push({
-                type: TokenTypes.STRING,
-                value: strValue,
-              });
-              this.#cursor--;
+            // Check if the string is a recognized keyword and push the token accordingly
+            switch (strValue) {
+              case "return":
+                tokens.push({
+                  type: TokenTypes.RETURN,
+                  value: strValue,
+                });
+
+                break;
+              case "if":
+                tokens.push({
+                  type: TokenTypes.IF,
+                  value: strValue,
+                });
+                break;
+              case "while":
+                tokens.push({
+                  type: TokenTypes.WHILE,
+                  value: strValue,
+                });
+                break;
+              case "for":
+                tokens.push({
+                  type: TokenTypes.FOR,
+                  value: strValue,
+                });
+                break;
+              case "else":
+                tokens.push({
+                  type: TokenTypes.ELSE,
+                  value: strValue,
+                });
+                break;
+              case "switch":
+                tokens.push({
+                  type: TokenTypes.SWITCH,
+                  value: strValue,
+                });
+                break;
+              case "case":
+                tokens.push({
+                  type: TokenTypes.CASE,
+                  value: strValue,
+                });
+                break;
+              // Add other keywords as needed. We can continue to add more keywords as needed.
+              //if not a keyword go into the default case and treat it as a string
+              default:
+                tokens.push({
+                  type: TokenTypes.STRING,
+                  value: strValue,
+                });
             }
-            /* At this point, cursor is positioned on first char that doesn't belong to the string 
-                We already increment at the end of the loop and since the char doesn't belong,
-                we want to make sure it doesn't get skipped on the next iteration. Thus, we must decrement.*/
-            // console.log(this.#at());
+            /*once outside the switch case, decrement the cursor to account for the last character that was read
+             signalling  the end of the string. This is so that the next character can be read and wont be skipped 
+             on the next iteration of the while loop. */
+            this.#cursor--;
           } else {
             throw new Error(
               `Unexpected token at position: ${
                 this.#cursor
-              }, instead received: '${this.#at()}'`
+              }, instead received: '${this.#currentIndex()}'`
             );
           }
           break;
