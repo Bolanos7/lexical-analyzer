@@ -87,12 +87,16 @@ class Lexer {
           this.#cursor++;
           break;
         case ">":
+          /*check if the next character is an equal sign, if it is, 
+            push the token for greater than or equal to, else push the 
+            token for greater than */
           if (
             this.#stream[this.#cursor] === ">" &&
             this.#stream[this.#cursor + 1] === "="
           ) {
             tokens.push({ type: "GREATER_OR_EQUAL", value: ">=" });
-            this.#cursor++; // Advance past the '=' character
+            // if the next character is an equal sign, we want to advance past the '=' character to avoid checking it twice.
+            this.#cursor++;
           } else {
             tokens.push({ type: "GREATER_THAN", value: ">" });
           }
@@ -100,10 +104,14 @@ class Lexer {
 
         case "<":
           if (
+            /*check if the next character is an equal sign, if it is, 
+            push the token for less than or equal to, else push the 
+            token for less than */
             this.#stream[this.#cursor] === "<" &&
             this.#stream[this.#cursor + 1] === "="
           ) {
             tokens.push({ type: "LESS_OR_EQUAL", value: "<=" });
+            // if the next character is an equal sign, we want to advance past the '=' character to avoid checking it twice.
             this.#cursor++; // Advance past the '=' character
           } else {
             tokens.push({ type: "LESS_THAN", value: "<" });
