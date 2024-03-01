@@ -99,7 +99,10 @@ class Lexer {
           break;
 
         case "<":
-          if (this.#stream[this.#cursor + 1] === "=") {
+          if (
+            this.#stream[this.#cursor] === "<" &&
+            this.#stream[this.#cursor + 1] === "="
+          ) {
             tokens.push({ type: "LESS_OR_EQUAL", value: "<=" });
             this.#cursor++; // Advance past the '=' character
           } else {
