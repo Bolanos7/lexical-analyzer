@@ -8,11 +8,14 @@ const TokenTypes = {
   LPAREN: "LPAREN",
   RPAREN: "RPAREN",
   STRING: "STRING",
+  RETURN: "RETURN",
+  IF: "IF",
+  WHILE: "WHILE",
   EOF: "EOF",
 };
 
 class Lexer {
-  //stream of characters to be tokenized
+  //stream of characters to be tokenized. We put the hashtag to indicate that this is a private variable
   #stream = "";
   //position of the cursor in the stream of characters
   #cursor = 0;
@@ -93,11 +96,31 @@ class Lexer {
               strValue += this.#at();
               this.#cursor++;
             }
-            tokens.push({
-              type: TokenTypes.STRING,
-              value: strValue,
-            });
-            this.#cursor--;
+            if (strValue === "return") {
+              tokens.push({
+                type: TokenTypes.RETURN,
+                value: strValue,
+              });
+              this.#cursor--;
+            } else if (strValue === "if") {
+              tokens.push({
+                type: TokenTypes.IF,
+                value: strValue,
+              });
+              this.#cursor--;
+            } else if (strValue === "while") {
+              tokens.push({
+                type: TokenTypes.WHILE,
+                value: strValue,
+              });
+              this.#cursor--;
+            } else {
+              tokens.push({
+                type: TokenTypes.STRING,
+                value: strValue,
+              });
+              this.#cursor--;
+            }
             /* At this point, cursor is positioned on first char that doesn't belong to the string 
                 We already increment at the end of the loop and since the char doesn't belong,
                 we want to make sure it doesn't get skipped on the next iteration. Thus, we must decrement.*/
@@ -135,4 +158,5 @@ function isAlpha(char = "") {
   );
 }
 
+//export the Lexer class and the TokenTypes object
 module.exports = { Lexer, TokenTypes };
