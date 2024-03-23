@@ -85,6 +85,7 @@ class Parser {
   }
 
   //Higher precedence
+
   #parse_factor() {
     if (this.#currentIndex().type == TokenTypes.INTEGER) {
       let literal = {
