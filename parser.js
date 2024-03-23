@@ -46,7 +46,7 @@ class Parser {
       const ttype =
         this.#currentIndex().type === TokenTypes.PLUS ? "PLUS" : "MINUS";
       this.#eatToken(ttype);
-      let rhs = this.#parse_expression();
+      let rhs = this.#parse_term();
       leftHandSide = {
         type: "BinaryOperator",
         operator: operator,
@@ -72,7 +72,7 @@ class Parser {
       const ttype =
         this.#currentIndex().type == TokenTypes.DIVIDE ? "DIVIDE" : "MULTIPLY";
       this.#eatToken(ttype);
-      let rhs = this.#parse_expression();
+      let rhs = this.#parse_factor();
       leftHandSide = {
         type: "BinaryOperator",
         operator: operator,
@@ -97,15 +97,21 @@ class Parser {
     // console.log(this.#currentIndex().type);
 
     //parentheses expression
-    this.#eatToken(TokenTypes.LPAREN);
+
     let expression;
 
-    while (this.#currentIndex().type != TokenTypes.RPAREN) {
-      expression = this.#parse_expression();
+    if (this.#currentIndex().type != TokenTypes.RPAREN) {
+      this.#eatToken(TokenTypes.LPAREN);
+      let expression = this.#parse_expression();
+      this.#eatToken(TokenTypes.RPAREN);
+      return expression;
     }
 
-    this.#eatToken(TokenTypes.RPAREN);
-    return expression;
+    throw Error(
+      ` Expected a parenthesis token or a integer token in input instead received: ${JSON.stringify(
+        this.#currentIndex()
+      )} at position ${this.#cursor}`
+    );
   }
 }
 
