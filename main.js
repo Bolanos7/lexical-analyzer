@@ -1,10 +1,12 @@
 const { Lexer } = require("./lexer");
+const { Parser } = require("./parser");
 
 const lexer = new Lexer();
 
 //testing the lexer
-const tokens = lexer.tokenize(
-  "Hello {2} + (1>=1) == 2 break continue ) if while for . ..." +
-    "more testing here null @ , ; 4%3 Thank you for using the lexer!"
-);
-console.log(tokens);
+const tokens = lexer.tokenize("1 +3 - 2");
+
+const parser = new Parser(tokens);
+const ast = parser.parse();
+console.log(ast);
+// console.log(tokens);

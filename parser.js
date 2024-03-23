@@ -1,4 +1,4 @@
-const { tokenType } = require("./lexer");
+const { TokenTypes } = require("./lexer");
 
 class Parser {
   #tokens = [];
@@ -13,7 +13,7 @@ class Parser {
   }
 
   #eatToken(tokenType) {
-    if (this.#currentIndex().type === tokenType) {
+    if (tokenType == this.#currentIndex().type) {
       this.#cursor++;
     } else {
       throw new Error(
@@ -38,13 +38,13 @@ class Parser {
 
     // while the current token is either a plus or minus token = true, go into the loop
     while (
-      this.#currentIndex().type === tokenType.PLUS ||
-      this.#currentIndex().type === tokenType.SUBTRACT
+      this.#currentIndex().type == TokenTypes.PLUS ||
+      this.#currentIndex().type == TokenTypes.MINUS
     ) {
       // if parentheses is true, return the left hand side(PLUS) else return the right hand side(MINUS) and store into ttype
-      const operator = this.#currentIndex.value;
+      const operator = this.#currentIndex().value;
       const ttype =
-        this.#currentIndex().type === tokenType.PLUS ? "PLUS" : "MINUS";
+        this.#currentIndex().type === TokenTypes.PLUS ? "PLUS" : "MINUS";
       this.#eatToken(ttype);
       let rhs = this.#parse_expression();
       leftHandSide = {
@@ -62,13 +62,35 @@ class Parser {
   #parse_term() {
     let leftHandSide = this.#parse_factor();
 
+    // while the current token is either a plus or minus token = true, go into the loop
+    while (
+      this.#currentIndex().type == TokenTypes.MULTIPLY ||
+      this.#currentIndex().type == TokenTypes.DIVIDE
+    ) {
+      // if parentheses is true, return the left hand side(PLUS) else return the right hand side(MINUS) and store into ttype
+      const operator = this.#currentIndex().value;
+      const ttype =
+        this.#currentIndex().type == TokenTypes.DIVIDE ? "DIVIDE" : "MULTIPLY";
+      this.#eatToken(ttype);
+      let rhs = this.#parse_expression();
+      leftHandSide = {
+        type: "BinaryOperator",
+        operator: operator,
+        leftHandSide: leftHandSide,
+        rightHandSide: rhs,
+      };
+    }
+
     return leftHandSide;
   }
 
   //Higher precedence
   #parse_factor() {
-    return { type: "NumericLiteral", value: this.#currentIndex().value };
-    this.#eatToken(tokenType.INTEGER);
+    const literal = {
+      type: "NumericLiteral",
+      value: this.#currentIndex().value,
+    };
+    this.#eatToken(TokenTypes.INTEGER);
     return literal;
   }
 }
