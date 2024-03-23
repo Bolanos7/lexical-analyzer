@@ -6,8 +6,8 @@ const { Parser } = require("./parser");
 
 const lexer = new Lexer();
 
-//testing the lexer
-const tokens = lexer.tokenize("(10 -2) * 3");
+//testing the lexer and parser
+const tokens = lexer.tokenize("(10 -2 + 4 / 3) + ( 3 - 1)");
 
 const parser = new Parser(tokens);
 const ast = parser.parse();
