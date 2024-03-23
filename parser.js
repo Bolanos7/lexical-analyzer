@@ -1,17 +1,22 @@
 const { TokenTypes } = require("./lexer");
 
 class Parser {
+  //private variables to store the tokens and the cursor
   #tokens = [];
   #cursor = 0;
 
+  //private methods to get the current token, the next token and to eat the token
   #currentIndex() {
     return this.#tokens[this.#cursor];
   }
 
+  //return the token in the next position of the current token
+
   #peak(n = 1) {
     return this.#tokens[this.#cursor + n];
   }
-
+  //increment the cursor to the next token if the token type is the same as the current token type
+  //else throw an error
   #eatToken(tokenType) {
     if (tokenType == this.#currentIndex().type) {
       this.#cursor++;
@@ -24,16 +29,19 @@ class Parser {
     }
   }
 
+  //constructor to initialize the tokens
   constructor(tokens) {
     this.#tokens = tokens;
   }
 
+  //main method to parse the tokens. This is where the parsing of the tokens begins
   parse() {
     return this.#parse_expression();
   }
 
   // parse addition/subtraction
   #parse_expression() {
+    //parse the term will return the left hand side of the expression
     let leftHandSide = this.#parse_term();
 
     // while the current token is either a plus or minus token = true, go into the loop
@@ -41,12 +49,16 @@ class Parser {
       this.#currentIndex().type == TokenTypes.PLUS ||
       this.#currentIndex().type == TokenTypes.MINUS
     ) {
-      // if parentheses is true, return the left hand side(PLUS) else return the right hand side(MINUS) and store into ttype
+      // if condition is true, return the left hand side(PLUS) else return the right hand side(MINUS)
+      // and store into ttype
       const operator = this.#currentIndex().value;
       const ttype =
         this.#currentIndex().type === TokenTypes.PLUS ? "PLUS" : "MINUS";
       this.#eatToken(ttype);
+      //parse the term will return the right hand side of the expression
       let rhs = this.#parse_term();
+
+      //store the left hand side and right hand side into a binary operator object
       leftHandSide = {
         type: "BinaryOperator",
         operator: operator,
@@ -55,24 +67,32 @@ class Parser {
       };
     }
 
+    //return the object with the left hand side and right hand side
     return leftHandSide;
   }
 
   //multiplication and division
   #parse_term() {
+    //parse the factor will return the left hand side of the expression
     let leftHandSide = this.#parse_factor();
 
-    // while the current token is either a plus or minus token = true, go into the loop
+    // while the current token is either a multiply or divide token = true, go into the loop
     while (
       this.#currentIndex().type == TokenTypes.MULTIPLY ||
       this.#currentIndex().type == TokenTypes.DIVIDE
     ) {
-      // if parentheses is true, return the left hand side(PLUS) else return the right hand side(MINUS) and store into ttype
+      // if condition is true, return the left hand side(DIVIDE)
+      //else return the right hand side(MULTIPLY)
+
       const operator = this.#currentIndex().value;
       const ttype =
         this.#currentIndex().type == TokenTypes.DIVIDE ? "DIVIDE" : "MULTIPLY";
       this.#eatToken(ttype);
+
+      //parse the factor will return the right hand side of the expression
       let rhs = this.#parse_factor();
+
+      //store the left hand side and right hand side into a binary operator object
       leftHandSide = {
         type: "BinaryOperator",
         operator: operator,
@@ -81,11 +101,13 @@ class Parser {
       };
     }
 
+    //return the object with the left hand side and right hand side
     return leftHandSide;
   }
 
-  //Higher precedence
+  //Highest precedence is given to the parentheses expression
 
+  //if the current token is an integer, return the integer
   #parse_factor() {
     if (this.#currentIndex().type == TokenTypes.INTEGER) {
       let literal = {
@@ -98,10 +120,10 @@ class Parser {
     // console.log(this.#currentIndex().type);
 
     //parentheses expression
-
     let expression;
 
-    if (this.#currentIndex().type != TokenTypes.RPAREN) {
+    //if the current token is a left parenthesis, parse the expression and return the expression
+    if (this.#currentIndex().type == TokenTypes.LPAREN) {
       this.#eatToken(TokenTypes.LPAREN);
       let expression = this.#parse_expression();
       this.#eatToken(TokenTypes.RPAREN);
