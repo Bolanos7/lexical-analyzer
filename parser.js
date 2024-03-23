@@ -86,12 +86,26 @@ class Parser {
 
   //Higher precedence
   #parse_factor() {
-    const literal = {
-      type: "NumericLiteral",
-      value: this.#currentIndex().value,
-    };
-    this.#eatToken(TokenTypes.INTEGER);
-    return literal;
+    if (this.#currentIndex().type == TokenTypes.INTEGER) {
+      let literal = {
+        type: "NumericLiteral",
+        value: this.#currentIndex().value,
+      };
+      this.#eatToken(TokenTypes.INTEGER);
+      return literal;
+    }
+    // console.log(this.#currentIndex().type);
+
+    //parentheses expression
+    this.#eatToken(TokenTypes.LPAREN);
+    let expression;
+
+    while (this.#currentIndex().type != TokenTypes.RPAREN) {
+      expression = this.#parse_expression();
+    }
+
+    this.#eatToken(TokenTypes.RPAREN);
+    return expression;
   }
 }
 
