@@ -34,11 +34,6 @@ class Parser {
     this.#tokens = tokens;
   }
 
-  //main method to parse the tokens. This is where the parsing of the tokens begins
-  parse() {
-    return this.#parse_expression();
-  }
-
   // parse addition/subtraction
   #parse_expression() {
     //parse the term will return the left hand side of the expression
@@ -135,6 +130,48 @@ class Parser {
         this.#currentIndex()
       )} at position ${this.#cursor}`
     );
+  }
+
+  #checkBinaryOperator(operator, left, right) {
+    // Check for numeric operands
+    if (typeof left !== "number" || typeof right !== "number") {
+      throw new Error(`Operands must be numeric for operator '${operator}'`);
+    }
+
+    // Division by zero check
+    if (operator === "/" && right === 0) {
+      throw new Error(`Division by zero error`);
+    }
+
+    // Return the result of the operation
+    switch (operator) {
+      case "+":
+        return left + right;
+      case "-":
+        return left - right;
+      case "*":
+        return left * right;
+      case "/":
+        return left / right;
+      default:
+        throw new Error(`Unsupported operator '${operator}'`);
+    }
+  }
+
+  evaluateExpression(expression) {
+    if (expression.type === "NumericLiteral") {
+      return parseInt(expression.value); // Parse the value as an integer
+    } else if (expression.type === "BinaryOperator") {
+      const left = this.evaluateExpression(expression.leftHandSide);
+      const right = this.evaluateExpression(expression.rightHandSide);
+      return this.#checkBinaryOperator(expression.operator, left, right);
+    }
+  }
+
+  parse() {
+    const parsedExpression = this.#parse_expression();
+    const result = this.evaluateExpression(parsedExpression);
+    return parsedExpression;
   }
 }
 
